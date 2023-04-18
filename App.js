@@ -1,66 +1,23 @@
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  TextInput,
-  TouchableWithoutFeedback,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-  Button,
-} from "react-native";
+import { useFonts } from "expo-font";
+import { NavigationContainer } from "@react-navigation/native";
+
+import { useRoute } from "./routing";
 
 export default function App() {
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
+  const [fontsLoaded] = useFonts({
+    "Roboto - regular": require("./assets/fonts/Roboto-Regular.ttf"),
+    "Roboto - medium": require("./assets/fonts/Roboto-Medium.ttf"),
+  });
 
-  const nameHandler = (text) => setName(text);
-  const passwordHandler = (text) => setPassword(text);
+  const routing = useRoute(true);
 
-  const onLogin = () => {
-    Alert.alert("Credentials", `${name} + ${password}`);
-  };
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS == "ios" ? "padding" : "height"}
-        >
-          <TextInput
-            value={name}
-            onChangeText={nameHandler}
-            placeholder="Username"
-            style={styles.input}
-          />
-          <TextInput
-            value={password}
-            onChangeText={passwordHandler}
-            placeholder="Password"
-            secureTextEntry={true}
-            style={styles.input}
-          />
-          <Button title={"Login"} style={styles.input} onPress={onLogin} />
-        </KeyboardAvoidingView>
-      </View>
-    </TouchableWithoutFeedback>
+    <>
+      <NavigationContainer>{routing}</NavigationContainer>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#ecf0f1",
-  },
-  input: {
-    width: 200,
-    height: 44,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "black",
-    marginBottom: 10,
-  },
-});
