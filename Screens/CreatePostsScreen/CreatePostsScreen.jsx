@@ -1,14 +1,20 @@
 import { TouchableOpacity, View, Image, Text, TextInput } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
+import * as Location from "expo-location";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { styles } from "./CreatePostsScreen.styles";
 import { useEffect, useState } from "react";
-export default function CreatePostsScreen() {
+
+export default function CreatePostsScreen({ navigation }) {
   const [type, setType] = useState(CameraType.back);
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [photo, setPhoto] = useState("");
+
+  const [location, setLocation] = useState(null);
 
   function toggleCameraType() {
     setType((current) =>
@@ -21,6 +27,11 @@ export default function CreatePostsScreen() {
       await MediaLibrary.requestPermissionsAsync();
 
       setHasPermission(status === "granted");
+
+      let loc = await Location.requestForegroundPermissionsAsync();
+      if (loc.status !== "granted") {
+        console.log("Permission to access location was denied");
+      }
     })();
   }, []);
   if (hasPermission === null) {
@@ -29,6 +40,24 @@ export default function CreatePostsScreen() {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
+
+  const takePhoto = async () => {
+    if (cameraRef) {
+      const { uri } = await cameraRef.takePictureAsync();
+      await MediaLibrary.createAssetAsync(uri);
+      setPhoto(uri);
+    }
+  };
+  const onSubmit = async () => {
+    let location = await Location.getCurrentPositionAsync({});
+    const coords = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+    setLocation(coords);
+
+    navigation.navigate("Posts");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.cameraWrapper}>
@@ -43,16 +72,7 @@ export default function CreatePostsScreen() {
         ) : (
           <Image source={{ uri: photo }} style={styles.camera} />
         )}
-        <TouchableOpacity
-          style={styles.button(photo)}
-          onPress={async () => {
-            if (cameraRef) {
-              const { uri } = await cameraRef.takePictureAsync();
-              await MediaLibrary.createAssetAsync(uri);
-              setPhoto(uri);
-            }
-          }}
-        >
+        <TouchableOpacity style={styles.button(photo)} onPress={takePhoto}>
           <MaterialIcons
             name="photo-camera"
             size={24}
@@ -69,9 +89,29 @@ export default function CreatePostsScreen() {
       )}
       <TextInput
         style={styles.input}
-        placeholder="Title"
+        placeholder="Title..."
         placeholderTextColor="#BDBDBD"
       />
+
+      <View style={{ position: "relative" }}>
+        <Ionicons
+          name="location-outline"
+          size={24}
+          color="#BDBDBD"
+          style={styles.locationIcon}
+        />
+        <TextInput
+          style={{ ...styles.input, paddingLeft: 28 }}
+          placeholder="Location..."
+          placeholderTextColor="#BDBDBD"
+        />
+      </View>
+      <TouchableOpacity style={styles.createButton} onPress={onSubmit}>
+        <Text style={styles.createText}>Create</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.deleteButton}>
+        <AntDesign name="delete" size={24} color="#BDBDBD" />
+      </TouchableOpacity>
     </View>
   );
 }

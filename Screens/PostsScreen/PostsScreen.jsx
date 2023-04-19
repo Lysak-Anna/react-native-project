@@ -1,4 +1,9 @@
 import { View } from "react-native";
-export default function PostsScreen() {
-  return <View style={{ marginHorizontal: 16 }}></View>;
+import Post from "../../components/Post/Post";
+export default function PostsScreen({ navigation }) {
+  return (
+    <View style={{ marginHorizontal: 16 }}>
+      <Post navigation={navigation} />
+    </View>
+  );
 }

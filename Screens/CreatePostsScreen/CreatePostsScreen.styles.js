@@ -1,10 +1,11 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFF",
     paddingTop: 32,
+    paddingBottom: 34,
     paddingLeft: 16,
     paddingRight: 16,
   },
@@ -46,9 +47,46 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#BDBDBD",
     paddingBottom: 15,
+
+    marginBottom: 32,
     fontFamily: "Roboto - medium",
     fontSize: 16,
     lineHeight: 18.75,
     color: "#212121",
+  },
+  createButton: {
+    backgroundColor: "#F6F6F6",
+    borderRadius: 100,
+    paddingTop: 16,
+    paddingBottom: 16,
+  },
+  createText: {
+    textAlign: "center",
+    color: "#BDBDBD",
+    fontSize: 16,
+    lineHeight: 19,
+    fontFamily: "Roboto - regular",
+  },
+  deleteButton: {
+    width: 70,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#F6F6F6",
+    marginTop: "auto",
+    marginLeft: "auto",
+    marginRight: "auto",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  locationIcon: {
+    position: "absolute",
+    ...Platform.select({
+      ios: {
+        top: -3,
+      },
+      android: {
+        top: 3,
+      },
+    }),
   },
 });
