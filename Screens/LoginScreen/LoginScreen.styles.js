@@ -29,21 +29,6 @@ export const styles = StyleSheet.create({
     color: "#212121",
     marginBottom: 33,
   },
-
-  input: {
-    backgroundColor: "#F6F6F6",
-    borderWidth: 1,
-    borderColor: "#E8E8E8",
-    borderRadius: 8,
-
-    height: 50,
-    padding: 16,
-    marginBottom: 16,
-    fontSize: 16,
-    lineHeight: 18.75,
-    fontFamily: "Roboto - regular",
-    color: "#212121",
-  },
   button: {
     backgroundColor: "#FF6C00",
     borderRadius: 100,

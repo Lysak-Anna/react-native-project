@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -12,13 +13,29 @@ export const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   form: {
+    overflow: "visible",
     backgroundColor: "#fff",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    paddingTop: 160,
+
     paddingBottom: 66,
     paddingLeft: 16,
     paddingRight: 16,
+  },
+  imgContainer: {
+    position: "relative",
+    width: 120,
+    height: 120,
+    marginTop: -60,
+    marginLeft: "auto",
+    marginRight: "auto",
+    backgroundColor: "#F6F6F6",
+    borderRadius: 16,
+  },
+  icon: {
+    position: "absolute",
+    bottom: 16,
+    right: -12,
   },
   title: {
     textAlign: "center",
@@ -28,21 +45,7 @@ export const styles = StyleSheet.create({
     lineHeight: 35.16,
     color: "#212121",
     marginBottom: 33,
-  },
-
-  input: {
-    backgroundColor: "#F6F6F6",
-    borderWidth: 1,
-    borderColor: "#E8E8E8",
-    borderRadius: 8,
-
-    height: 50,
-    padding: 16,
-    marginBottom: 16,
-    fontSize: 16,
-    lineHeight: 18.75,
-    fontFamily: "Roboto - regular",
-    color: "#212121",
+    marginTop: 32,
   },
   button: {
     backgroundColor: "#FF6C00",

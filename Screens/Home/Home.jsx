@@ -3,7 +3,6 @@ import { TouchableOpacity } from "react-native";
 
 import { AntDesign } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
@@ -46,22 +45,7 @@ export default function Home({ navigation }) {
                 color={focused ? "#FFF" : "rgba(33, 33, 33, 0.8)"}
               />
             ),
-
-            headerRight: (props) => (
-              <TouchableOpacity
-                onPress={() => console.log("log out")}
-                style={{ marginRight: 20 }}
-              >
-                <MaterialIcons name="logout" size={24} color="#BDBDBD" />
-              </TouchableOpacity>
-            ),
-            headerTitleAlign: "center",
-            headerTitleStyle: {
-              fontSize: 17,
-              lineHeight: 22,
-              color: "#212121",
-              fontFamily: "Roboto - medium",
-            },
+            headerShown: false,
           }}
         />
         <Tab.Screen
