@@ -35,7 +35,7 @@ export default function Home({ navigation }) {
         backBehavior="history"
       >
         <Tab.Screen
-          name="Posts"
+          name="NestedPosts"
           component={PostsScreen}
           options={{
             tabBarIcon: ({ focused, size, color }) => (

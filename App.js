@@ -1,7 +1,11 @@
 import { useFonts } from "expo-font";
-import { NavigationContainer } from "@react-navigation/native";
 
-import { useRoute } from "./routing";
+import { Provider } from "react-redux";
+
+import { store } from "./redux/store";
+import "./firebase/config";
+
+import Main from "./components/Main/Main";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -9,15 +13,13 @@ export default function App() {
     "Roboto - medium": require("./assets/fonts/Roboto-Medium.ttf"),
   });
 
-  const routing = useRoute(true);
-
   if (!fontsLoaded) {
     return null;
   }
 
   return (
-    <>
-      <NavigationContainer>{routing}</NavigationContainer>
-    </>
+    <Provider store={store}>
+      <Main />
+    </Provider>
   );
 }

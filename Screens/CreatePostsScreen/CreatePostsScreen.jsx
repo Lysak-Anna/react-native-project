@@ -8,13 +8,24 @@ import { AntDesign } from "@expo/vector-icons";
 import { styles } from "./CreatePostsScreen.styles";
 import { useEffect, useState } from "react";
 
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db, storage } from "../../firebase/config";
+import { collection, addDoc } from "firebase/firestore";
+import "react-native-get-random-values";
+import { nanoid } from "nanoid";
+import { app } from "../../firebase/config";
+import { useSelector } from "react-redux";
+import { selectId } from "../../redux/auth/authSelectors";
+
 export default function CreatePostsScreen({ navigation }) {
+  const id = useSelector(selectId);
+
   const [type, setType] = useState(CameraType.back);
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [photo, setPhoto] = useState("");
-
-  const [location, setLocation] = useState(null);
+  const [title, setTitle] = useState("");
+  const [place, setPlace] = useState("");
 
   function toggleCameraType() {
     setType((current) =>
@@ -48,14 +59,37 @@ export default function CreatePostsScreen({ navigation }) {
       setPhoto(uri);
     }
   };
+  const uploadPhoto = async () => {
+    const image = await fetch(photo);
+    const blobPhoto = await image.blob();
+    const photoId = nanoid();
+    const imagesRef = ref(storage, `images/${photoId}`);
+    await uploadBytes(imagesRef, blobPhoto);
+    const url = await getDownloadURL(imagesRef);
+    return url;
+  };
+  const uploadPost = async (location) => {
+    const url = await uploadPhoto();
+    try {
+      const docRef = await addDoc(collection(db, "posts"), {
+        photo: url,
+        title,
+        place,
+        location,
+        userId: id,
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
   const onSubmit = async () => {
     let location = await Location.getCurrentPositionAsync({});
     const coords = {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
     };
-    setLocation(coords);
-
+    await uploadPost(coords);
     navigation.navigate("Posts");
   };
   return (
@@ -91,6 +125,8 @@ export default function CreatePostsScreen({ navigation }) {
         style={styles.input}
         placeholder="Title..."
         placeholderTextColor="#BDBDBD"
+        value={title}
+        onChangeText={(text) => setTitle(text)}
       />
 
       <View style={{ position: "relative" }}>
@@ -104,6 +140,8 @@ export default function CreatePostsScreen({ navigation }) {
           style={{ ...styles.input, paddingLeft: 28 }}
           placeholder="Location..."
           placeholderTextColor="#BDBDBD"
+          value={place}
+          onChangeText={(text) => setPlace(text)}
         />
       </View>
       <TouchableOpacity style={styles.createButton} onPress={onSubmit}>

@@ -32,6 +32,12 @@ export const styles = StyleSheet.create({
     backgroundColor: "#F6F6F6",
     borderRadius: 16,
   },
+  avatar: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+    borderRadius: 16,
+  },
   icon: {
     position: "absolute",
     bottom: 16,
@@ -39,7 +45,7 @@ export const styles = StyleSheet.create({
   },
   title: {
     textAlign: "center",
-    fontWeight: 500,
+    // fontWeight: 500,
     fontFamily: "Roboto - medium",
     fontSize: 30,
     lineHeight: 35.16,

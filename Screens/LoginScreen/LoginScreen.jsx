@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import {
   View,
@@ -11,11 +12,14 @@ import {
   Keyboard,
   ScrollView,
 } from "react-native";
+
+import { signIn } from "../../redux/auth/authOperations";
 import Input from "../../components/Input/Input";
 import { validation } from "../../helpers/fieldsValidation";
 import { styles } from "./LoginScreen.styles";
 
 export default function LoginScreen({ navigation }) {
+  const dispatch = useDispatch();
   const [show, setShow] = useState(false);
 
   const {
@@ -29,12 +33,13 @@ export default function LoginScreen({ navigation }) {
       password: "",
     },
   });
+
   const toggleShowPassword = () => {
     setShow(!show);
   };
 
   const onSubmit = (data) => {
-    console.log(data);
+    dispatch(signIn(data));
   };
 
   return (

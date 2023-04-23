@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { AntDesign } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
-import Input from "../../components/Input/Input";
 import {
   View,
-  ScrollView,
   ImageBackground,
   Text,
   TouchableOpacity,
@@ -12,13 +10,27 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
-  Dimensions,
+  Image,
 } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import "react-native-get-random-values";
+import { nanoid } from "nanoid";
+
+import { auth, storage } from "../../firebase/config";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { updateProfile } from "firebase/auth";
+import { signUp } from "../../redux/auth/authOperations";
+
+import Input from "../../components/Input/Input";
 import { styles } from "./RegistrationScreen.styles";
 import { validation } from "../../helpers/fieldsValidation";
 
 export default function RegistrationScreen({ navigation }) {
+  const dispatch = useDispatch();
+  const [image, setImage] = useState(null);
   const [show, setShow] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -31,12 +43,42 @@ export default function RegistrationScreen({ navigation }) {
       password: "",
     },
   });
+
   const toggleShowPassword = () => {
     setShow(!show);
   };
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  const uploadPhoto = async () => {
+    const avatar = await fetch(image);
+    const blobPhoto = await avatar.blob();
+    const photoId = nanoid();
+    const imagesRef = ref(storage, `avatars/${photoId}`);
+    await uploadBytes(imagesRef, blobPhoto);
+    const url = await getDownloadURL(imagesRef);
+    return url;
+  };
+
+  const onSubmit = async (data) => {
+    await dispatch(signUp(data));
+    if (image) {
+      const avatar = await uploadPhoto();
+      await updateProfile(auth.currentUser, {
+        photoURL: avatar,
+      });
+    }
   };
 
   return (
@@ -53,9 +95,12 @@ export default function RegistrationScreen({ navigation }) {
               android: -100,
             })}
           >
-            <ScrollView style={styles.form}>
+            <View style={styles.form}>
               <View style={styles.imgContainer}>
-                <TouchableOpacity style={styles.icon}>
+                {image && (
+                  <Image source={{ uri: image }} style={styles.avatar} />
+                )}
+                <TouchableOpacity style={styles.icon} onPress={pickImage}>
                   <AntDesign name="pluscircleo" size={24} color="#FF6C00" />
                 </TouchableOpacity>
               </View>
@@ -97,7 +142,7 @@ export default function RegistrationScreen({ navigation }) {
                   Already have an account? Sign in
                 </Text>
               </TouchableOpacity>
-            </ScrollView>
+            </View>
           </KeyboardAvoidingView>
         </ImageBackground>
       </View>
