@@ -59,8 +59,8 @@ export const isLoggedIn = createAsyncThunk(
         console.log("Auth state changed:", user);
         if (user) {
           const data = {
-            displayName: user.displayName,
-            email: user.email,
+            displayName: UserImpl.displayName,
+            email: UserImpl.email,
           };
 
           return data;

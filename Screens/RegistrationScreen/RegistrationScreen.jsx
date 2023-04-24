@@ -68,6 +68,7 @@ export default function RegistrationScreen({ navigation }) {
     const imagesRef = ref(storage, `avatars/${photoId}`);
     await uploadBytes(imagesRef, blobPhoto);
     const url = await getDownloadURL(imagesRef);
+    console.log("upload");
     return url;
   };
 

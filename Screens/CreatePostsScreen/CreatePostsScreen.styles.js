@@ -18,7 +18,8 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E8E8E8",
     backgroundColor: "#F6F6F6",
-    marginBottom: 8,
+    marginBottom: 75,
+    overflow: "hidden",
   },
   camera: {
     width: "100%",
@@ -26,7 +27,17 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     resizeMode: "cover",
   },
-
+  toggleCamera: {
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    top: 16,
+    left: 16,
+    width: 30,
+    height: 30,
+    borderRadius: 50,
+    backgroundColor: "#FFF",
+  },
   button: (photo) => ({
     position: "absolute",
     justifyContent: "center",
@@ -54,19 +65,19 @@ export const styles = StyleSheet.create({
     lineHeight: 18.75,
     color: "#212121",
   },
-  createButton: {
-    backgroundColor: "#F6F6F6",
+  createButton: (props) => ({
+    backgroundColor: props ? "#FF6C00" : "#F6F6F6",
     borderRadius: 100,
     paddingTop: 16,
     paddingBottom: 16,
-  },
-  createText: {
+  }),
+  createText: (props) => ({
     textAlign: "center",
-    color: "#BDBDBD",
+    color: props ? "#FFF" : "#BDBDBD",
     fontSize: 16,
     lineHeight: 19,
     fontFamily: "Roboto - regular",
-  },
+  }),
   deleteButton: {
     width: 70,
     height: 40,
