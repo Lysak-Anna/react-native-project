@@ -9,15 +9,17 @@ import { styles } from "./NestedPostsScreen.styles";
 
 export default function NestedPostsScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
+
   const getData = async () => {
     const querySnapshot = await getDocs(collection(db, "posts"));
     const posts = querySnapshot.docs.map((doc) => ({
-      ...doc._document.data.value.mapValue.fields,
+      ...doc.data(),
       postId: doc.id,
     }));
+
     setPosts(posts);
   };
-  console.log(posts);
+
   useEffect(() => {
     getData();
   }, []);
@@ -26,7 +28,7 @@ export default function NestedPostsScreen({ navigation }) {
     <View style={styles.container}>
       <FlatList
         data={posts}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.postId}
         renderItem={({ item }) => (
           <View style={styles.postContainer}>
             <View style={styles.userInfo}>
@@ -34,15 +36,12 @@ export default function NestedPostsScreen({ navigation }) {
                 <Image />
               </View>
               <View style={{ justifyContent: "center" }}>
-                <Text style={styles.username}>{item.username.stringValue}</Text>
-                <Text style={styles.email}>{item.email.stringValue}</Text>
+                <Text style={styles.username}>{item.username}</Text>
+                <Text style={styles.email}>{item.email}</Text>
               </View>
             </View>
-            <Image
-              source={{ uri: item.photo.stringValue }}
-              style={styles.photo}
-            />
-            <Text style={styles.title}>{item.title.stringValue}</Text>
+            <Image source={{ uri: item.photo }} style={styles.photo} />
+            <Text style={styles.title}>{item.title}</Text>
             <View
               style={{
                 flexDirection: "row",
@@ -52,7 +51,10 @@ export default function NestedPostsScreen({ navigation }) {
             >
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate("Comments", { postId: item.postId })
+                  navigation.navigate("Comments", {
+                    postId: item.postId,
+                    uri: item.photo,
+                  })
                 }
               >
                 <EvilIcons name="comment" size={30} color="#BDBDBD" />
@@ -65,7 +67,7 @@ export default function NestedPostsScreen({ navigation }) {
                   style={{ flexDirection: "row", alignItems: "center" }}
                 >
                   <Ionicons name="location-outline" size={24} color="#BDBDBD" />
-                  <Text style={styles.place}>{item.place.stringValue}</Text>
+                  <Text style={styles.place}>{item.place}</Text>
                 </TouchableOpacity>
               </View>
             </View>

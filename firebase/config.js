@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+
 import {
   API_KEY,
   AUTH_DOMAIN,
@@ -11,6 +12,7 @@ import {
   APP_ID,
   MEASUREMENT_ID,
 } from "@env";
+
 const firebaseConfig = {
   apiKey: API_KEY,
   authDomain: AUTH_DOMAIN,

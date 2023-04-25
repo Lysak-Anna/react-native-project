@@ -62,7 +62,9 @@ export default function RegistrationScreen({ navigation }) {
   };
 
   const uploadPhoto = async () => {
+    console.log(image);
     const avatar = await fetch(image);
+    console.log(avatar);
     const blobPhoto = await avatar.blob();
     const photoId = nanoid();
     const imagesRef = ref(storage, `avatars/${photoId}`);

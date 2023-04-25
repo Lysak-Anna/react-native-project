@@ -1,23 +1,20 @@
-import { StyleSheet } from "react-native";
-
-export const styles = StyleSheet.create({
+export const styles = {
   container: {
     flex: 1,
-
-    backgroundColor: "#fff",
+    backgroundColor: "#FFF",
   },
   image: {
     flex: 1,
     resizeMode: "cover",
     justifyContent: "flex-end",
+    paddingTop: 300,
   },
-  form: {
+  profileContainer: {
     overflow: "visible",
     backgroundColor: "#fff",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
 
-    paddingBottom: 66,
     paddingLeft: 16,
     paddingRight: 16,
   },
@@ -38,42 +35,47 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
   },
   icon: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 25,
+    height: 25,
+    backgroundColor: "#FFF",
+    borderWidth: 1,
+    borderRadius: 50,
+    borderColor: "#E8E8E8",
     position: "absolute",
     bottom: 16,
     right: -12,
   },
-  title: {
-    textAlign: "center",
-    // fontWeight: 500,
+  name: {
     fontFamily: "Roboto - medium",
     fontSize: 30,
-    lineHeight: 35.16,
+    lineHeight: 35,
     color: "#212121",
-    marginBottom: 33,
-    marginTop: 32,
-  },
-  button: {
-    backgroundColor: "#FF6C00",
-    borderRadius: 100,
-    marginTop: 27,
-    marginBottom: 16,
-    paddingTop: 16,
-    paddingBottom: 16,
-    paddingLeft: 32,
-    paddingRight: 32,
-  },
-  label: {
     textAlign: "center",
+    marginTop: 32,
+    marginBottom: 32,
+  },
+  photo: {
+    height: 240,
+    width: "100%",
+    borderRadius: 8,
+    overflow: "hidden",
+    objectFit: "cover",
+    marginBottom: 8,
+  },
+  title: {
+    fontFamily: "Roboto - medium",
     fontSize: 16,
     lineHeight: 19,
-    fontFamily: "Roboto - regular",
-    color: "#fff",
+    color: "#212121",
+    marginBottom: 11,
   },
-  link: {
+  place: {
+    fontFamily: "Roboto - regular",
     fontSize: 16,
-    lineHeight: 18.75,
-    fontFamily: "Roboto - regular",
-    color: "#1B4371",
-    textAlign: "center",
+    lineHeight: 19,
+    color: "#212121",
+    textDecorationLine: "underline",
   },
-});
+};

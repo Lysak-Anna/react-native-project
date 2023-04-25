@@ -5,11 +5,11 @@ import { AntDesign } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 
-const Tab = createBottomTabNavigator();
-
 import PostsScreen from "../PostsScreen/PostsScreen";
 import CreatePostsScreen from "../CreatePostsScreen/CreatePostsScreen";
 import ProfileScreen from "../ProfileScreen/ProfileScreen";
+
+const Tab = createBottomTabNavigator();
 
 export default function Home({ navigation }) {
   return (
@@ -95,6 +95,7 @@ export default function Home({ navigation }) {
                 color={focused ? "#FFF" : "rgba(33, 33, 33, 0.8)"}
               />
             ),
+            headerShown: false,
           }}
         />
       </Tab.Navigator>

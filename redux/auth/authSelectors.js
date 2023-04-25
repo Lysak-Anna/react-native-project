@@ -4,4 +4,5 @@ export const selectUser = (state) => ({
   username: state.auth.username,
   email: state.auth.email,
   id: state.auth.id,
+  avatar: state.auth.avatar,
 });

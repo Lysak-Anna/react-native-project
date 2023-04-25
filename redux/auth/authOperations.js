@@ -32,8 +32,9 @@ export const signIn = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
-      const { email, displayName, uid } = auth.currentUser;
-      return { email, displayName, uid };
+      const { email, displayName, uid, photoURL } = auth.currentUser;
+
+      return { email, displayName, uid, photoURL };
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -52,20 +53,27 @@ export const logOut = createAsyncThunk(
 );
 
 export const isLoggedIn = createAsyncThunk(
-  "auth/isAuth",
+  "auth/isLoggedIn",
   async (_, { rejectWithValue }) => {
     try {
-      onAuthStateChanged(auth, (user) => {
+      let displayName;
+      let email;
+      let avatar;
+      let id;
+      await onAuthStateChanged(auth, (user) => {
         console.log("Auth state changed:", user);
-        if (user) {
-          const data = {
-            displayName: UserImpl.displayName,
-            email: UserImpl.email,
-          };
 
-          return data;
+        if (user) {
+          displayName = user.displayName;
+          email = user.email;
+          avatar = user.photoURL;
+          id = user.uid;
         }
       });
+      if (!email) {
+        return rejectWithValue("Error");
+      }
+      return { displayName, email, avatar, id };
     } catch (error) {
       return rejectWithValue(error.message);
     }

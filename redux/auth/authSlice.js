@@ -5,6 +5,7 @@ const initialState = {
   id: "",
   email: "",
   username: "",
+  avatar: "",
   isAuth: false,
   isLoading: false,
   error: null,
@@ -40,6 +41,7 @@ const authSlice = createSlice({
         state.email = payload.email;
         state.username = payload.displayName;
         state.id = payload.uid;
+        state.avatar = payload.photoURL;
       })
       .addCase(signIn.rejected, (state, { payload }) => {
         state.isLoading = false;
@@ -50,11 +52,12 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(isLoggedIn.fulfilled, (state, { payload }) => {
-        console.log(payload);
         state.isLoading = false;
         state.isAuth = true;
-        state.email = payload?.email;
-        state.username = payload?.displayName;
+        state.email = payload.email;
+        state.username = payload.displayName;
+        state.id = payload.id;
+        state.avatar = payload.avatar;
       })
       .addCase(isLoggedIn.rejected, (state, { payload }) => {
         state.isLoading = false;
@@ -67,6 +70,10 @@ const authSlice = createSlice({
       .addCase(logOut.fulfilled, (state) => {
         state.isLoading = false;
         state.isAuth = false;
+        state.avatar = "";
+        state.email = "";
+        state.id = "";
+        state.username = "";
       })
       .addCase(logOut.rejected, (state, { payload }) => {
         state.isLoading = false;
