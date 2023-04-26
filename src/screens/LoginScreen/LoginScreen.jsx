@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import {
   View,
@@ -11,8 +11,10 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 
+import { selectIsLoading } from "../../redux/auth/authSelectors";
 import { signIn } from "../../redux/auth/authOperations";
 import Input from "../../components/Input/Input";
 import { validation } from "../../helpers/fieldsValidation";
@@ -20,6 +22,7 @@ import { styles } from "./LoginScreen.styles";
 
 export default function LoginScreen({ navigation }) {
   const dispatch = useDispatch();
+  const isLoading = useSelector(selectIsLoading);
   const [show, setShow] = useState(false);
 
   const {
@@ -46,7 +49,7 @@ export default function LoginScreen({ navigation }) {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
         <ImageBackground
-          source={require("../../assets/background/Photo.png")}
+          source={require("../../../assets/background/Photo.png")}
           style={styles.image}
         >
           <KeyboardAvoidingView
@@ -76,14 +79,21 @@ export default function LoginScreen({ navigation }) {
                 toggleShowPassword={toggleShowPassword}
                 show={show}
               />
-
-              <TouchableOpacity
-                style={styles.button}
-                activeOpacity={0.7}
-                onPress={handleSubmit(onSubmit)}
-              >
-                <Text style={styles.label}>Sign in</Text>
-              </TouchableOpacity>
+              {isLoading ? (
+                <ActivityIndicator
+                  size="large"
+                  color="#FF6C00"
+                  style={{ marginTop: 27, marginBottom: 16 }}
+                />
+              ) : (
+                <TouchableOpacity
+                  style={styles.button}
+                  activeOpacity={0.7}
+                  onPress={handleSubmit(onSubmit)}
+                >
+                  <Text style={styles.label}>Sign in</Text>
+                </TouchableOpacity>
+              )}
               <TouchableOpacity onPress={() => navigation.navigate("Register")}>
                 <Text style={styles.link}>Don't have an account? Sign up</Text>
               </TouchableOpacity>

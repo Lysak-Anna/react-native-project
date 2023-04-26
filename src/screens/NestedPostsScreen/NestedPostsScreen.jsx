@@ -1,23 +1,24 @@
-import { View, Image, TouchableOpacity, Text } from "react-native";
+import { useEffect, useState } from "react";
+import { View, Image, TouchableOpacity, Text, FlatList } from "react-native";
 import { EvilIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import { collection, onSnapshot, query } from "firebase/firestore";
+
 import { db } from "../../firebase/config";
-import { collection, getDocs } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { FlatList } from "react-native";
 import { styles } from "./NestedPostsScreen.styles";
 
 export default function NestedPostsScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
 
   const getData = async () => {
-    const querySnapshot = await getDocs(collection(db, "posts"));
-    const posts = querySnapshot.docs.map((doc) => ({
-      ...doc.data(),
-      postId: doc.id,
-    }));
-
-    setPosts(posts);
+    const q = query(collection(db, "posts"));
+    onSnapshot(q, (querySnapshot) => {
+      const posts = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        postId: doc.id,
+      }));
+      setPosts(posts);
+    });
   };
 
   useEffect(() => {
@@ -33,7 +34,12 @@ export default function NestedPostsScreen({ navigation }) {
           <View style={styles.postContainer}>
             <View style={styles.userInfo}>
               <View style={styles.avatar}>
-                <Image />
+                {item.avatar && (
+                  <Image
+                    source={{ uri: item.avatar }}
+                    style={styles.avatarImg}
+                  />
+                )}
               </View>
               <View style={{ justifyContent: "center" }}>
                 <Text style={styles.username}>{item.username}</Text>

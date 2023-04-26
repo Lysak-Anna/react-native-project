@@ -15,28 +15,33 @@ import { useSelector } from "react-redux";
 import { selectUser } from "./../../redux/auth/authSelectors";
 import { useEffect, useState } from "react";
 import { db } from "../../firebase/config";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 
 export default function ProfileScreen({ navigation }) {
   const { id, avatar, username } = useSelector(selectUser);
   const [posts, setPosts] = useState([]);
+
   const getPosts = async () => {
     const postsRef = collection(db, "posts");
     const q = query(postsRef, where("userId", "==", id));
-    const querySnapshot = await getDocs(q);
-    const posts = querySnapshot.docs.map((doc) => ({
-      ...doc.data(),
-      docId: doc.id,
-    }));
-    setPosts(posts);
+    await onSnapshot(q, (querySnapshot) => {
+      const posts = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        postId: doc.id,
+      }));
+
+      setPosts(posts);
+    });
   };
+
   useEffect(() => {
     getPosts();
   }, []);
+
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require("../../assets/background/Photo.png")}
+        source={require("../../../assets/background/Photo.png")}
         style={styles.image}
       >
         <View style={styles.profileContainer}>
@@ -50,7 +55,7 @@ export default function ProfileScreen({ navigation }) {
           {posts && (
             <FlatList
               data={posts}
-              keyExtractor={(item) => item.docId}
+              keyExtractor={(item) => item.postId}
               renderItem={({ item }) => (
                 <View style={{ marginBottom: 34 }}>
                   <Image style={styles.photo} source={{ uri: item.photo }} />

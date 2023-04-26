@@ -2,10 +2,9 @@ import { useFonts } from "expo-font";
 
 import { Provider } from "react-redux";
 
-import { store } from "./redux/store";
-import "./firebase/config";
-
-import Main from "./components/Main/Main";
+import { store } from "./src/redux/store";
+import "./src/firebase/config";
+import Main from "./src/components/Main/Main";
 
 export default function App() {
   const [fontsLoaded] = useFonts({

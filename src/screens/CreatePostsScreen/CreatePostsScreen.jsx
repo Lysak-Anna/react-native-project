@@ -17,18 +17,20 @@ import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { styles } from "./CreatePostsScreen.styles";
 import { useEffect, useState } from "react";
-import * as ImagePicker from "expo-image-picker";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+
 import { db, storage } from "../../firebase/config";
 import { collection, addDoc } from "firebase/firestore";
-import "react-native-get-random-values";
-import { nanoid } from "nanoid";
+
 import ModalContent from "../../components/ModalContent/ModalContent";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../redux/auth/authSelectors";
+import { uploadPhoto } from "../../firebase/methods/uploadPhoto";
+import { pickImage } from "../../firebase/methods/pickImage";
+
+import { ActivityIndicator } from "react-native";
 
 export default function CreatePostsScreen({ navigation }) {
-  const { id, email, username } = useSelector(selectUser);
+  const { id, email, username, avatar } = useSelector(selectUser);
 
   const [type, setType] = useState(CameraType.back);
   const [hasPermission, setHasPermission] = useState(null);
@@ -38,6 +40,8 @@ export default function CreatePostsScreen({ navigation }) {
   const [place, setPlace] = useState("");
   const [camera, setCamera] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   function toggleCameraType() {
     setType((current) =>
@@ -64,20 +68,8 @@ export default function CreatePostsScreen({ navigation }) {
     return <Text>No access to camera</Text>;
   }
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setPhoto(result.assets[0].uri);
-    }
-  };
   const openGallery = async () => {
-    await pickImage();
+    await pickImage(setPhoto);
     setModalVisible(false);
   };
 
@@ -95,18 +87,9 @@ export default function CreatePostsScreen({ navigation }) {
     setCamera(true);
   };
 
-  const uploadPhoto = async () => {
-    const image = await fetch(photo);
-    const blobPhoto = await image.blob();
-    const photoId = nanoid();
-    const imagesRef = ref(storage, `images/${photoId}`);
-    await uploadBytes(imagesRef, blobPhoto);
-    const url = await getDownloadURL(imagesRef);
-    return url;
-  };
-
   const uploadPost = async (location) => {
-    const url = await uploadPhoto();
+    const url = await uploadPhoto(photo, "images");
+
     try {
       const docRef = await addDoc(collection(db, "posts"), {
         photo: url,
@@ -116,24 +99,41 @@ export default function CreatePostsScreen({ navigation }) {
         userId: id,
         email,
         username,
+        avatar,
       });
+
       console.log("Document written with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   };
+
   const onSubmit = async () => {
-    // if (!title || !photo || !place) {
-    //   return <Text>Required fields</Text>;
-    // }
-    let location = await Location.getCurrentPositionAsync({});
-    const coords = {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    };
-    await uploadPost(coords);
-    navigation.navigate("Posts");
+    if (!title || !photo || !place) {
+      setError("Please, fill in all fields");
+      return;
+    }
+    try {
+      setIsLoading(true);
+
+      let location = await Location.getCurrentPositionAsync({});
+      const coords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+
+      await uploadPost(coords);
+      navigation.navigate("Posts");
+      setTitle("");
+      setPhoto("");
+      setPlace("");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
@@ -216,15 +216,22 @@ export default function CreatePostsScreen({ navigation }) {
             onChangeText={(text) => setPlace(text)}
           />
         </View>
-        <TouchableOpacity
-          style={styles.createButton(title && photo && place)}
-          onPress={onSubmit}
-        >
-          <Text style={styles.createText(title && photo && place)}>Create</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.deleteButton}>
-          <AntDesign name="delete" size={24} color="#BDBDBD" />
-        </TouchableOpacity>
+        {isLoading ? (
+          <ActivityIndicator
+            size="large"
+            color="#FF6C00"
+            style={{ marginTop: 32 }}
+          />
+        ) : (
+          <TouchableOpacity
+            style={styles.createButton(title && photo && place)}
+            onPress={onSubmit}
+          >
+            <Text style={styles.createText(title && photo && place)}>
+              Create
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     </TouchableWithoutFeedback>
   );

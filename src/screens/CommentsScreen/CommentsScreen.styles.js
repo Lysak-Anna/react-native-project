@@ -21,6 +21,7 @@ export const styles = {
     borderRadius: 50,
     objectFit: "cover",
     overflow: "hidden",
+    marginRight: 16,
   },
   textContainer: {
     width: "100%",

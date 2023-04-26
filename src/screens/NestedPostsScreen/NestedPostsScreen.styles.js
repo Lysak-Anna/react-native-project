@@ -4,6 +4,7 @@ export const styles = {
     paddingTop: 32,
     paddingLeft: 16,
     paddingRight: 16,
+    backgroundColor: "#FFF",
   },
   postContainer: {
     marginBottom: 34,
@@ -17,8 +18,15 @@ export const styles = {
     height: 60,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "black",
+    borderColor: "#BDBDBD",
     marginRight: 8,
+    overflow: "hidden",
+  },
+  avatarImg: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    borderRadius: 16,
   },
   username: {
     fontFamily: "Roboto - regular",

@@ -18,14 +18,14 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E8E8E8",
     backgroundColor: "#F6F6F6",
-    marginBottom: 75,
+    marginBottom: 32,
     overflow: "hidden",
   },
   camera: {
     width: "100%",
     height: "100%",
     borderRadius: 8,
-    resizeMode: "cover",
+    objectFit: "cover",
   },
   toggleCamera: {
     justifyContent: "center",
@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     backgroundColor: "#F6F6F6",
-    marginTop: "auto",
+
     marginLeft: "auto",
     marginRight: "auto",
     justifyContent: "center",

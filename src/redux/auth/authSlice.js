@@ -26,6 +26,7 @@ const authSlice = createSlice({
         state.email = payload.email;
         state.username = payload.displayName;
         state.id = payload.uid;
+        state.avatar = payload.photoURL;
       })
       .addCase(signUp.rejected, (state, { payload }) => {
         state.isLoading = false;
