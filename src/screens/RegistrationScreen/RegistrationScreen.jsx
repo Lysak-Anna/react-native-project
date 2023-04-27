@@ -15,19 +15,19 @@ import {
 } from "react-native";
 
 import { AntDesign } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
 
 import { signUp } from "../../redux/auth/authOperations";
-
+import { selectIsLoading } from "./../../redux/auth/authSelectors";
+import { pickImage } from "../../firebase/methods/pickImage";
 import Input from "../../components/Input/Input";
 import { styles } from "./RegistrationScreen.styles";
 import { validation } from "../../helpers/fieldsValidation";
-import { selectIsLoading } from "./../../redux/auth/authSelectors";
-import { pickImage } from "../../firebase/methods/pickImage";
 
 export default function RegistrationScreen({ navigation }) {
   const dispatch = useDispatch();
+
   const isLoading = useSelector(selectIsLoading);
+
   const [image, setImage] = useState(null);
   const [show, setShow] = useState(false);
 
@@ -47,19 +47,6 @@ export default function RegistrationScreen({ navigation }) {
   const toggleShowPassword = () => {
     setShow(!show);
   };
-
-  // const pickImage = async () => {
-  //   let result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quality: 1,
-  //   });
-
-  //   if (!result.canceled) {
-  //     setImage(result.assets[0].uri);
-  //   }
-  // };
 
   const onSubmit = async (data) => {
     data.avatar = image;

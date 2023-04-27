@@ -22,7 +22,6 @@ export const styles = StyleSheet.create({
   },
   title: {
     textAlign: "center",
-    // fontWeight: 500,
     fontFamily: "Roboto - medium",
     fontSize: 30,
     lineHeight: 35.16,

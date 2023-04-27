@@ -1,34 +1,56 @@
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   ImageBackground,
   View,
   Image,
   TouchableOpacity,
   Text,
-  ScrollView,
   FlatList,
 } from "react-native";
+import {
+  collection,
+  getCountFromServer,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
+
 import { Ionicons } from "@expo/vector-icons";
 import { EvilIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
+
 import { styles } from "./ProfileScreen.styles";
-import { useSelector } from "react-redux";
 import { selectUser } from "./../../redux/auth/authSelectors";
-import { useEffect, useState } from "react";
+import { changeAvatar, logOut } from "../../redux/auth/authOperations";
 import { db } from "../../firebase/config";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { pickImage } from "../../firebase/methods/pickImage";
 
 export default function ProfileScreen({ navigation }) {
+  const dispatch = useDispatch();
+
   const { id, avatar, username } = useSelector(selectUser);
+
   const [posts, setPosts] = useState([]);
+  const [photo, setPhoto] = useState("");
 
   const getPosts = async () => {
     const postsRef = collection(db, "posts");
     const q = query(postsRef, where("userId", "==", id));
-    await onSnapshot(q, (querySnapshot) => {
-      const posts = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        postId: doc.id,
-      }));
+
+    onSnapshot(q, async (querySnapshot) => {
+      const posts = await Promise.all(
+        querySnapshot.docs.map(async (doc) => {
+          const coll = collection(db, `posts/${doc.id}/comments`);
+          const snapshot = await getCountFromServer(coll);
+
+          return {
+            ...doc.data(),
+            postId: doc.id,
+            commentCount: snapshot.data().count,
+          };
+        })
+      );
 
       setPosts(posts);
     });
@@ -38,6 +60,11 @@ export default function ProfileScreen({ navigation }) {
     getPosts();
   }, []);
 
+  const newAvatar = async () => {
+    await pickImage(setPhoto);
+    dispatch(changeAvatar(photo));
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -45,10 +72,20 @@ export default function ProfileScreen({ navigation }) {
         style={styles.image}
       >
         <View style={styles.profileContainer}>
-          <View style={styles.imgContainer}>
-            {avatar && <Image style={styles.avatar} source={{ uri: avatar }} />}
-            <TouchableOpacity style={styles.icon}>
-              <MaterialIcons name="close" size={20} color="#E8E8E8" />
+          <View style={{ marginBottom: 40 }}>
+            <View style={styles.imgContainer}>
+              {avatar && (
+                <Image style={styles.avatar} source={{ uri: avatar }} />
+              )}
+              <TouchableOpacity style={styles.icon} onPress={newAvatar}>
+                <MaterialIcons name="close" size={20} color="#E8E8E8" />
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              onPress={() => dispatch(logOut())}
+              style={{ marginLeft: "auto", marginTop: -40 }}
+            >
+              <MaterialIcons name="logout" size={24} color="#BDBDBD" />
             </TouchableOpacity>
           </View>
           <Text style={styles.name}>{username}</Text>
@@ -69,9 +106,21 @@ export default function ProfileScreen({ navigation }) {
                     }}
                   >
                     <TouchableOpacity
-                      onPress={() => navigation.navigate("Comments", {})}
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                      onPress={() =>
+                        navigation.navigate("Comments", {
+                          postId: item.postId,
+                          uri: item.photo,
+                        })
+                      }
                     >
-                      <EvilIcons name="comment" size={30} color="#BDBDBD" />
+                      <EvilIcons
+                        name="comment"
+                        size={30}
+                        color="#BDBDBD"
+                        style={styles.commentIcon}
+                      />
+                      <Text style={styles.count}>{item.commentCount}</Text>
                     </TouchableOpacity>
                     <View>
                       <TouchableOpacity

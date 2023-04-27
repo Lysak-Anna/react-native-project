@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   TouchableWithoutFeedback,
   TouchableOpacity,
@@ -7,6 +9,7 @@ import {
   TextInput,
   Modal,
   Keyboard,
+  ActivityIndicator,
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
@@ -15,19 +18,14 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
-import { styles } from "./CreatePostsScreen.styles";
-import { useEffect, useState } from "react";
-
-import { db, storage } from "../../firebase/config";
 import { collection, addDoc } from "firebase/firestore";
 
+import { styles } from "./CreatePostsScreen.styles";
 import ModalContent from "../../components/ModalContent/ModalContent";
-import { useSelector } from "react-redux";
 import { selectUser } from "../../redux/auth/authSelectors";
+import { db } from "../../firebase/config";
 import { uploadPhoto } from "../../firebase/methods/uploadPhoto";
 import { pickImage } from "../../firebase/methods/pickImage";
-
-import { ActivityIndicator } from "react-native";
 
 export default function CreatePostsScreen({ navigation }) {
   const { id, email, username, avatar } = useSelector(selectUser);
@@ -48,6 +46,7 @@ export default function CreatePostsScreen({ navigation }) {
       current === CameraType.back ? CameraType.front : CameraType.back
     );
   }
+
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
@@ -57,10 +56,11 @@ export default function CreatePostsScreen({ navigation }) {
 
       let loc = await Location.requestForegroundPermissionsAsync();
       if (loc.status !== "granted") {
-        console.log("Permission to access location was denied");
+        setError("Permission to access location was denied");
       }
     })();
   }, []);
+
   if (hasPermission === null) {
     return <View />;
   }
@@ -81,6 +81,7 @@ export default function CreatePostsScreen({ navigation }) {
       setCamera(false);
     }
   };
+
   const openCamera = () => {
     setModalVisible(false);
     setPhoto(null);
@@ -91,7 +92,7 @@ export default function CreatePostsScreen({ navigation }) {
     const url = await uploadPhoto(photo, "images");
 
     try {
-      const docRef = await addDoc(collection(db, "posts"), {
+      await addDoc(collection(db, "posts"), {
         photo: url,
         title,
         place,
@@ -101,10 +102,8 @@ export default function CreatePostsScreen({ navigation }) {
         username,
         avatar,
       });
-
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
+    } catch (error) {
+      setError("Error adding document: ", error.message);
     }
   };
 

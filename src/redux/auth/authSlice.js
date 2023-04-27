@@ -1,5 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { signUp, signIn, isLoggedIn, logOut } from "./authOperations";
+import {
+  signUp,
+  signIn,
+  isLoggedIn,
+  logOut,
+  changeAvatar,
+} from "./authOperations";
 
 const initialState = {
   id: "",
@@ -77,6 +83,18 @@ const authSlice = createSlice({
         state.username = "";
       })
       .addCase(logOut.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        state.error = payload;
+      })
+      .addCase(changeAvatar.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(changeAvatar.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.avatar = payload.photoURL;
+      })
+      .addCase(changeAvatar.rejected, (state, { payload }) => {
         state.isLoading = false;
         state.error = payload;
       });

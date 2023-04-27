@@ -16,14 +16,15 @@ export const signUp = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       await createUserWithEmailAndPassword(auth, data.email, data.password);
-
-      const url = data.avatar && (await uploadPhoto(data.avatar, "avatars"));
+      const { uid } = auth.currentUser;
+      const url =
+        data.avatar && (await uploadPhoto(data.avatar, "avatars", uid));
 
       await updateProfile(auth.currentUser, {
         displayName: data.username,
         photoURL: url,
       });
-      const { email, displayName, uid, photoURL } = auth.currentUser;
+      const { email, displayName, photoURL } = auth.currentUser;
 
       return { email, displayName, uid, photoURL };
     } catch (error) {
@@ -79,6 +80,25 @@ export const isLoggedIn = createAsyncThunk(
         return rejectWithValue("Error");
       }
       return { displayName, email, avatar, id };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const changeAvatar = createAsyncThunk(
+  "auth/changeAvatar",
+  async (data, { rejectWithValue }) => {
+    try {
+      const { uid } = auth.currentUser;
+      const url = await uploadPhoto(data, "avatars", uid);
+
+      await updateProfile(auth.currentUser, {
+        photoURL: url,
+      });
+      const { photoURL } = auth.currentUser;
+
+      return { photoURL };
     } catch (error) {
       return rejectWithValue(error.message);
     }

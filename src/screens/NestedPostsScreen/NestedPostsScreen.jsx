@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { View, Image, TouchableOpacity, Text, FlatList } from "react-native";
 import { EvilIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import { collection, onSnapshot, query } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  query,
+  getCountFromServer,
+} from "firebase/firestore";
 
 import { db } from "../../firebase/config";
 import { styles } from "./NestedPostsScreen.styles";
@@ -12,11 +17,21 @@ export default function NestedPostsScreen({ navigation }) {
 
   const getData = async () => {
     const q = query(collection(db, "posts"));
-    onSnapshot(q, (querySnapshot) => {
-      const posts = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        postId: doc.id,
-      }));
+
+    onSnapshot(q, async (querySnapshot) => {
+      const posts = await Promise.all(
+        querySnapshot.docs.map(async (doc) => {
+          const coll = collection(db, `posts/${doc.id}/comments`);
+          const snapshot = await getCountFromServer(coll);
+
+          return {
+            ...doc.data(),
+            postId: doc.id,
+            commentCount: snapshot.data().count,
+          };
+        })
+      );
+
       setPosts(posts);
     });
   };
@@ -56,6 +71,7 @@ export default function NestedPostsScreen({ navigation }) {
               }}
             >
               <TouchableOpacity
+                style={{ flexDirection: "row", alignItems: "center" }}
                 onPress={() =>
                   navigation.navigate("Comments", {
                     postId: item.postId,
@@ -63,7 +79,13 @@ export default function NestedPostsScreen({ navigation }) {
                   })
                 }
               >
-                <EvilIcons name="comment" size={30} color="#BDBDBD" />
+                <EvilIcons
+                  name="comment"
+                  size={30}
+                  color="#BDBDBD"
+                  style={{ marginBottom: 6 }}
+                />
+                <Text style={styles.count}>{item.commentCount}</Text>
               </TouchableOpacity>
               <View>
                 <TouchableOpacity

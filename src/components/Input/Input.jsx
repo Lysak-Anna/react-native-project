@@ -1,8 +1,10 @@
-import { TextInput, View, Text } from "react-native";
 import { useState } from "react";
-import { Entypo } from "@expo/vector-icons";
-import { styles } from "./Input.styles";
+import { TextInput, View, Text } from "react-native";
 import { Controller } from "react-hook-form";
+import { Entypo } from "@expo/vector-icons";
+
+import { styles } from "./Input.styles";
+
 export default function Input({
   control,
   name,

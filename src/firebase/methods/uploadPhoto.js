@@ -3,10 +3,9 @@ import { nanoid } from "nanoid";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../config";
 
-export const uploadPhoto = async (image, folder) => {
+export const uploadPhoto = async (image, folder, photoId = nanoid()) => {
   const avatar = await fetch(image);
   const blobPhoto = await avatar.blob();
-  const photoId = nanoid();
 
   const imagesRef = ref(storage, `${folder}/${photoId}`);
 

@@ -1,3 +1,5 @@
+import { Platform } from "react-native";
+
 export const styles = {
   container: {
     flex: 1,
@@ -53,7 +55,7 @@ export const styles = {
     lineHeight: 35,
     color: "#212121",
     textAlign: "center",
-    marginTop: 32,
+
     marginBottom: 32,
   },
   photo: {
@@ -77,5 +79,18 @@ export const styles = {
     lineHeight: 19,
     color: "#212121",
     textDecorationLine: "underline",
+  },
+  count: {
+    fontFamily: "Roboto - regular",
+    fontSize: 16,
+    lineHeight: 19,
+    color: "#212121",
+  },
+  commentIcon: {
+    ...Platform.select({
+      android: {
+        marginBottom: 6,
+      },
+    }),
   },
 };

@@ -63,4 +63,10 @@ export const styles = {
     color: "#212121",
     textDecorationLine: "underline",
   },
+  count: {
+    fontFamily: "Roboto - regular",
+    fontSize: 16,
+    lineHeight: 19,
+    color: "#212121",
+  },
 };
