@@ -68,6 +68,7 @@ export default function ProfileScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <ImageBackground
+        resizeMode={"stretch"}
         source={require("../../../assets/background/Photo.png")}
         style={styles.image}
       >

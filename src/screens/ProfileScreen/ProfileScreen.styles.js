@@ -6,10 +6,8 @@ export const styles = {
     backgroundColor: "#FFF",
   },
   image: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "flex-end",
-    paddingTop: 300,
+    justifyContent: "center",
+    paddingTop: 240,
   },
   profileContainer: {
     overflow: "visible",
@@ -19,6 +17,7 @@ export const styles = {
 
     paddingLeft: 16,
     paddingRight: 16,
+    paddingBottom: 160,
   },
   imgContainer: {
     position: "relative",

@@ -7,9 +7,9 @@ import {
   Image,
   Text,
   TextInput,
-  Modal,
   Keyboard,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
@@ -21,7 +21,6 @@ import { Entypo } from "@expo/vector-icons";
 import { collection, addDoc } from "firebase/firestore";
 
 import { styles } from "./CreatePostsScreen.styles";
-import ModalContent from "../../components/ModalContent/ModalContent";
 import { selectUser } from "../../redux/auth/authSelectors";
 import { db } from "../../firebase/config";
 import { uploadPhoto } from "../../firebase/methods/uploadPhoto";
@@ -37,9 +36,7 @@ export default function CreatePostsScreen({ navigation }) {
   const [title, setTitle] = useState("");
   const [place, setPlace] = useState("");
   const [camera, setCamera] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
 
   function toggleCameraType() {
     setType((current) =>
@@ -56,7 +53,7 @@ export default function CreatePostsScreen({ navigation }) {
 
       let loc = await Location.requestForegroundPermissionsAsync();
       if (loc.status !== "granted") {
-        setError("Permission to access location was denied");
+        return Alert.alert("Permission to access location was denied");
       }
     })();
   }, []);
@@ -65,12 +62,11 @@ export default function CreatePostsScreen({ navigation }) {
     return <View />;
   }
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return Alert.alert("No access to camera");
   }
 
   const openGallery = async () => {
     await pickImage(setPhoto);
-    setModalVisible(false);
   };
 
   const takePhoto = async () => {
@@ -83,7 +79,6 @@ export default function CreatePostsScreen({ navigation }) {
   };
 
   const openCamera = () => {
-    setModalVisible(false);
     setPhoto(null);
     setCamera(true);
   };
@@ -103,14 +98,13 @@ export default function CreatePostsScreen({ navigation }) {
         avatar,
       });
     } catch (error) {
-      setError("Error adding document: ", error.message);
+      return Alert.alert("Error adding document: ", error.message);
     }
   };
 
   const onSubmit = async () => {
     if (!title || !photo || !place) {
-      setError("Please, fill in all fields");
-      return;
+      return Alert.alert("Please, fill in all fields");
     }
     try {
       setIsLoading(true);
@@ -127,27 +121,23 @@ export default function CreatePostsScreen({ navigation }) {
       setPhoto("");
       setPlace("");
     } catch (error) {
-      setError(error.message);
+      return Alert.alert(error.message);
     } finally {
       setIsLoading(false);
     }
   };
+  const openAlert = () =>
+    Alert.alert("Download from gallery or take a photo?", "", [
+      {
+        text: "Open gallery",
+        onPress: () => openGallery(),
+      },
+      { text: "Open camera", onPress: () => openCamera() },
+    ]);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
-        <Modal
-          transparent={true}
-          anymationType="fade"
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <ModalContent
-            openGallery={openGallery}
-            openCamera={openCamera}
-            onClose={() => setModalVisible(false)}
-          />
-        </Modal>
         <View style={styles.cameraWrapper}>
           {camera && (
             <Camera
@@ -167,10 +157,7 @@ export default function CreatePostsScreen({ navigation }) {
           )}
           {photo && <Image source={{ uri: photo }} style={styles.camera} />}
           {!camera ? (
-            <TouchableOpacity
-              style={styles.button(photo)}
-              onPress={() => setModalVisible(true)}
-            >
+            <TouchableOpacity style={styles.button(photo)} onPress={openAlert}>
               {photo ? (
                 <Entypo name="edit" size={24} color="#BDBDBD" />
               ) : (
